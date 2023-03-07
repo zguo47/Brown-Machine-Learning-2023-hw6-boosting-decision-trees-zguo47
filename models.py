@@ -201,8 +201,8 @@ class DecisionTree:
         The data should be recursively passed to the children.
         '''
         bol, label = self._is_terminal(node, data, indices)
+        node.label = label
         if bol == False:
-            node.label = label
             max_gain = float('-inf')
             max_gain_index = 1
             for index in indices:
@@ -221,9 +221,9 @@ class DecisionTree:
                     right_subset.append(data[r, :])
             n_indices = copy.deepcopy(indices)
             n_indices.remove(max_gain_index)
-            node.left = Node()
+            node.left = Node(isleaf=True)
             self._split_recurs(node.left, np.asarray(left_subset), n_indices)
-            node.right = Node()
+            node.right = Node(isleaf=True)
             self._split_recurs(node.right, np.asarray(right_subset), n_indices)
 
 
