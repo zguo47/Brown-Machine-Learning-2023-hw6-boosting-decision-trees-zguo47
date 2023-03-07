@@ -9,7 +9,7 @@ def node_score_error(prob):
         Calculate the node score using the train error of the subdataset and return it.
         For a dataset with two classes, C(p) = min{p, 1-p}
     '''
-    pass
+    return min(prob, 1-prob)
 
 
 def node_score_entropy(prob):
@@ -20,7 +20,7 @@ def node_score_entropy(prob):
         For the purposes of this calculation, assume 0*log0 = 0.
         HINT: remember to consider the range of values that p can take!
     '''
-    pass
+    return -prob * math.log(prob) - (1-prob) * math.log(1-prob)
 
 
 def node_score_gini(prob):
@@ -29,7 +29,7 @@ def node_score_gini(prob):
         Calculate the node score using the gini index of the subdataset and return it.
         For dataset with 2 classes, C(p) = 2 * p * (1-p)
     '''
-    pass
+    return 2 * prob * (1-prob)
 
 
 
@@ -131,8 +131,24 @@ class DecisionTree:
         itself (i.e. we will only prune nodes that have two leaves as children.)
         HINT: Think about what variables need to be set when pruning a node!
         '''
-        pass
+        if node.isleaf:
+            return
+        if node.left != None and not node.left.isleaf:
+            self._prune_recurs(node.left, validation_data)
+        if node.right != None and not node.right.isleaf:
+            self._prune_recurs(node.right, validation_data)
+        
+        if  node.left != None and node.right != None and node.left.isleaf and node.right.isleaf:
+            curr_node_loss = self.loss(validation_data)
+            node.isleaf = True
 
+            changed_node_loss = self.loss(validation_data)
+
+            if curr_node_loss <= changed_node_loss:
+                node.isleaf = False
+            else:
+                node.left = None
+                node.right = None
 
     def _is_terminal(self, node, data, indices):
         '''
@@ -150,7 +166,13 @@ class DecisionTree:
               be if we were to terminate at that node). If there is no data left, you
               can return either label at random.
         '''
-        return True, 0
+        
+        if data.size == 0 or indices == None or node.depth > self.max_depth or len(set(data[:, 1:].flatten())) == 1 :
+            return True, node.label
+        else:
+            labels = data[:, 0]
+            return False, np.argmax(np.bincount(labels))
+            
 
 
     def _split_recurs(self, node, data, indices):
@@ -166,8 +188,30 @@ class DecisionTree:
         Then, split the data based on its value in the selected column.
         The data should be recursively passed to the children.
         '''
-
-        pass
+        bol, label = self._is_terminal(node, data, indices)
+        if bol == False:
+            node.label = label
+            max_gain = 0
+            max_gain_index = 0
+            for index in indices:
+                gain = self._calc_gain(data, index, self.gain_function)
+                if gain > max_gain:
+                    max_gain = gain
+                    max_gain_index = index
+            split_column = data[:, max_gain_index]
+            node._set_info(max_gain, len(split_column))
+            left_subset = []
+            right_subset = []
+            for r in range(len(split_column)):
+                if split_column[r] == 0:
+                    left_subset.append(data[r, :])
+                if split_column[r] == 1:
+                    right_subset.append(data[r, :])
+            indices = indices.remove(max_gain_index)
+            if node.left != None:
+                self._split_recurs(node.left, np.asarray(left_subset), indices)
+            if node.right != None:
+                self._split_recurs(node.right, np.asarray(right_subset), indices)
 
 
     def _calc_gain(self, data, split_index, gain_function):
@@ -178,7 +222,27 @@ class DecisionTree:
         Here the C(p) is the gain_function. For example, if C(p) = min(p, 1-p), this would be
         considering training error gain. Other alternatives are entropy and gini functions.
         '''
-        pass
+        split_column = data[:, split_index]
+        zero_count = 0
+        one_count = 0
+        left_subset = []
+        right_subset = []
+        for r in range(len(split_column)):
+            if split_column[r] == 0:
+                zero_count += 1
+                left_subset.append(data[r, 1:])
+            if split_column[r] == 1:
+                one_count += 1
+                right_subset.append(data[r, 1:])
+        left_subset = np.asarray(left_subset).reshape(-1, data[:, 1:].shape[1])
+        right_subset = np.asarray(right_subset).reshape(-1, data[:, 1:].shape[1])
+        P_y1 = np.sum(data[:, 1:])/(data[:, 1:].shape[0] * data[:, 1:].shape[1])
+        x_i_false = zero_count/len(split_column)
+        x_i_true = one_count/len(split_column)
+        P_y1_true = np.sum(right_subset)/(right_subset.shape[0] * right_subset.shape[1])
+        P_y0_false = 1 - np.sum(left_subset)/(left_subset.shape[0] * left_subset.shape[1])
+        gain = gain_function(P_y1) - x_i_true * gain_function(P_y1_true) - x_i_false * gain_function(P_y0_false)
+        return gain
     
 
     def print_tree(self):
