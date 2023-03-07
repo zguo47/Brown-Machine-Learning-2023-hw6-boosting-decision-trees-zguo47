@@ -246,10 +246,14 @@ class DecisionTree:
         P_y1 = np.sum(data)/(data.shape[0]*data.shape[1])
         x_i_false = zero_count/len(split_column)
         x_i_true = one_count/len(split_column)
-        print(right_subset.shape)
-        print(left_subset.shape)
-        P_y1_true = np.sum(right_subset)/(right_subset.shape[0]*right_subset.shape[1])
-        P_y0_false = 1 - np.sum(left_subset)/(left_subset.shape[0]*left_subset.shape[1])
+        if right_subset.shape[0] == 0:
+            P_y1_true = 0
+        else:
+            P_y1_true = np.sum(right_subset)/(right_subset.shape[0]*right_subset.shape[1])
+        if left_subset.shape[0] == 0:
+            P_y0_false = 0
+        else:
+            P_y0_false = 1 - np.sum(left_subset)/(left_subset.shape[0]*left_subset.shape[1])
         gain = gain_function(P_y1) - x_i_true * gain_function(P_y1_true) - x_i_false * gain_function(P_y0_false)
         return gain
     
