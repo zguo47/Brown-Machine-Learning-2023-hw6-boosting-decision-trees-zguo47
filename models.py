@@ -199,7 +199,7 @@ class DecisionTree:
         bol, label = self._is_terminal(node, data, indices)
         if bol == False:
             node.label = label
-            max_gain = 0
+            max_gain = float('-inf')
             max_gain_index = 1
             for index in indices:
                 gain = self._calc_gain(data, index, self.gain_function)
@@ -244,11 +244,11 @@ class DecisionTree:
                 right_subset.append(data[r, :])
         left_subset = np.asarray(left_subset).reshape(-1, data.shape[1])
         right_subset = np.asarray(right_subset).reshape(-1, data.shape[1])
-        P_y1 = np.sum(data)/len(data)
+        P_y1 = np.sum(data)/(data.shape[0]*data.shape[1])
         x_i_false = zero_count/len(split_column)
         x_i_true = one_count/len(split_column)
-        P_y1_true = np.sum(right_subset)/len(right_subset)
-        P_y0_false = 1 - np.sum(left_subset)/len(left_subset)
+        P_y1_true = np.sum(right_subset)/(right_subset.shape[0]*right_subset.shape[1])
+        P_y0_false = 1 - np.sum(left_subset)/(left_subset.shape[0]*left_subset.shape[1])
         gain = gain_function(P_y1) - x_i_true * gain_function(P_y1_true) - x_i_false * gain_function(P_y0_false)
         return gain
     
