@@ -238,19 +238,17 @@ class DecisionTree:
         for r in range(len(split_column)):
             if split_column[r] == 0:
                 zero_count += 1
-                left_subset.append(data[r, 1:])
+                left_subset.append(data[r, :])
             if split_column[r] == 1:
                 one_count += 1
-                right_subset.append(data[r, 1:])
-        left_subset = np.asarray(left_subset).reshape(-1, data[:, 1:].shape[1])
-        right_subset = np.asarray(right_subset).reshape(-1, data[:, 1:].shape[1])
-        P_y1 = np.sum(data[:, 1:])/(data[:, 1:].shape[0] * data[:, 1:].shape[1])
+                right_subset.append(data[r, :])
+        left_subset = np.asarray(left_subset).reshape(-1, data.shape[1])
+        right_subset = np.asarray(right_subset).reshape(-1, data.shape[1])
+        P_y1 = np.sum(data)/len(data)
         x_i_false = zero_count/len(split_column)
         x_i_true = one_count/len(split_column)
-        P_y1_true = np.sum(right_subset)/(right_subset.shape[0] * right_subset.shape[1])
-        print(np.sum(left_subset))
-        print(left_subset.shape[0] * left_subset.shape[1])
-        P_y0_false = 1 - np.sum(left_subset)/(left_subset.shape[0] * left_subset.shape[1])
+        P_y1_true = np.sum(right_subset)/len(right_subset)
+        P_y0_false = 1 - np.sum(left_subset)/len(left_subset)
         gain = gain_function(P_y1) - x_i_true * gain_function(P_y1_true) - x_i_false * gain_function(P_y0_false)
         return gain
     
