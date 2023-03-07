@@ -169,17 +169,17 @@ class DecisionTree:
         
         if (data.size == 0) or (len(indices) == 0) or (node.depth >= self.max_depth) or (len(set(data[:, 1:].flatten())) == 1) :
             if node.isleaf:
-                return True, node.label
+                return False, node.label
             else:
                 node.isleaf = True
                 if data.size != 0:
                     labels = data[:, 0]
-                    return True, np.argmax(np.bincount(labels))
+                    return False, np.argmax(np.bincount(labels))
                 else:
-                    return True, 1
+                    return False, 1
         else:
             labels = data[:, 0]
-            return False, np.argmax(np.bincount(labels))
+            return True, np.argmax(np.bincount(labels))
             
 
 
@@ -197,7 +197,7 @@ class DecisionTree:
         The data should be recursively passed to the children.
         '''
         bol, label = self._is_terminal(node, data, indices)
-        if bol == False:
+        if bol == True:
             node.label = label
             max_gain = 0
             max_gain_index = 0
