@@ -20,6 +20,12 @@ def node_score_entropy(prob):
         For the purposes of this calculation, assume 0*log0 = 0.
         HINT: remember to consider the range of values that p can take!
     '''
+    if prob == 0:
+        prob = 0.00001
+    if prob == 1:
+        prob = 0.99999
+    print(prob)
+
     return -prob * math.log(prob) - (1-prob) * math.log(1-prob)
 
 
