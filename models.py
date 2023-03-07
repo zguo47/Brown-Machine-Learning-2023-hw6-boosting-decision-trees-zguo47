@@ -144,7 +144,7 @@ class DecisionTree:
 
             changed_node_loss = self.loss(validation_data)
 
-            if curr_node_loss <= changed_node_loss:
+            if curr_node_loss < changed_node_loss:
                 node.isleaf = False
             else:
                 node.left = None
