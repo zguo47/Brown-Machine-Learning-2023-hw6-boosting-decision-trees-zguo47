@@ -203,6 +203,7 @@ class DecisionTree:
         bol, label = self._is_terminal(node, data, indices)
         node.label = label
         if bol == False:
+            node.isleaf = False
             max_gain = float('-inf')
             max_gain_index = 1
             for index in indices:
