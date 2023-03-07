@@ -133,12 +133,12 @@ class DecisionTree:
         '''
         if node.isleaf:
             return
-        if node.left != None and not node.left.isleaf:
+        if not node.left.isleaf:
             self._prune_recurs(node.left, validation_data)
-        if node.right != None and not node.right.isleaf:
+        if not node.right.isleaf:
             self._prune_recurs(node.right, validation_data)
         
-        if  node.left != None and node.right != None and node.left.isleaf and node.right.isleaf:
+        if  node.left.isleaf and node.right.isleaf:
             curr_node_loss = self.loss(validation_data)
             node.isleaf = True
 
@@ -169,17 +169,17 @@ class DecisionTree:
         
         if (data.size == 0) or (len(indices) == 0) or (node.depth >= self.max_depth) or (len(set(data[:, 1:].flatten())) == 1) :
             if node.isleaf:
-                return False, node.label
+                return True, node.label
             else:
                 node.isleaf = True
                 if data.size != 0:
                     labels = data[:, 0]
-                    return False, np.argmax(np.bincount(labels))
+                    return True, np.argmax(np.bincount(labels))
                 else:
-                    return False, 1
+                    return True, 1
         else:
             labels = data[:, 0]
-            return True, np.argmax(np.bincount(labels))
+            return False, np.argmax(np.bincount(labels))
             
 
 
@@ -197,10 +197,10 @@ class DecisionTree:
         The data should be recursively passed to the children.
         '''
         bol, label = self._is_terminal(node, data, indices)
-        if bol == True:
+        if bol == False:
             node.label = label
             max_gain = 0
-            max_gain_index = 0
+            max_gain_index = 1
             for index in indices:
                 gain = self._calc_gain(data, index, self.gain_function)
                 if gain > max_gain:
@@ -248,6 +248,8 @@ class DecisionTree:
         x_i_false = zero_count/len(split_column)
         x_i_true = one_count/len(split_column)
         P_y1_true = np.sum(right_subset)/(right_subset.shape[0] * right_subset.shape[1])
+        print(np.sum(left_subset))
+        print(left_subset.shape[0] * left_subset.shape[1])
         P_y0_false = 1 - np.sum(left_subset)/(left_subset.shape[0] * left_subset.shape[1])
         gain = gain_function(P_y1) - x_i_true * gain_function(P_y1_true) - x_i_false * gain_function(P_y0_false)
         return gain

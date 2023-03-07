@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from get_data import get_data
-from models import DecisionTree, node_score_error, node_score_entropy, node_score_gini
+from models import Node, DecisionTree, node_score_error, node_score_entropy, node_score_gini
 
 
 def loss_plot(ax, title, tree, pruned_tree, train_data, test_data):
@@ -42,6 +42,8 @@ def explore_dataset(filename, class_name):
     #      (c) Print average training loss (pruned)
     #      (d) Print average test loss (pruned)
     tree1 = DecisionTree(data=train_data, gain_function=node_score_error)
+    node = Node(left=None, right=None, depth=0, index_split_on=0, isleaf=True, label=1)
+    print(tree1._is_terminal(node, np.asarray([]), [1, 2, 3]))
     print('First loss', tree1.loss(train_data))
     tree2 = DecisionTree(data=train_data, gain_function=node_score_entropy)
     print('Second loss', tree2.loss(train_data))
