@@ -167,11 +167,10 @@ class DecisionTree:
               can return either label at random.
         '''
         
-        if (data.size == 0) or (len(indices) == 0) or (node.depth >= self.max_depth) or (len(set(data[:, 1:].flatten())) == 1) :
+        if (len(data) == 0) or (len(indices) == 0) or (node.depth >= self.max_depth) or (len(set(data[:, 0].flatten())) == 1) :
             if node.isleaf:
                 return True, node.label
             else:
-                node.isleaf = True
                 if data.size != 0:
                     labels = data[:, 0]
                     return True, np.argmax(np.bincount(labels))
