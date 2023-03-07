@@ -212,6 +212,7 @@ class DecisionTree:
                     max_gain_index = index
             split_column = data[:, max_gain_index]
             node._set_info(max_gain, len(split_column))
+            node.index_split_on = max_gain_index
             left_subset = []
             right_subset = []
             for r in range(len(split_column)):
@@ -221,9 +222,9 @@ class DecisionTree:
                     right_subset.append(data[r, :])
             n_indices = copy.deepcopy(indices)
             n_indices.remove(max_gain_index)
-            node.left = Node(isleaf=True, label=0)
+            node.left = Node(depth=node.depth+1, isleaf=True, label=0)
             self._split_recurs(node.left, np.asarray(left_subset), n_indices)
-            node.right = Node(isleaf=True, label=1)
+            node.right = Node(depth=node.depth+1, isleaf=True, label=1)
             self._split_recurs(node.right, np.asarray(right_subset), n_indices)
 
 
