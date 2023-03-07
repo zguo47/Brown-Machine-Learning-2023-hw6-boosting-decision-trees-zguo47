@@ -221,9 +221,9 @@ class DecisionTree:
                     right_subset.append(data[r, :])
             n_indices = copy.deepcopy(indices)
             n_indices.remove(max_gain_index)
-            node.left = Node(isleaf=True)
+            node.left = Node(isleaf=True, label=0)
             self._split_recurs(node.left, np.asarray(left_subset), n_indices)
-            node.right = Node(isleaf=True)
+            node.right = Node(isleaf=True, label=1)
             self._split_recurs(node.right, np.asarray(right_subset), n_indices)
 
 
