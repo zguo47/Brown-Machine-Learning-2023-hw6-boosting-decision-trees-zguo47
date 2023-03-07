@@ -24,7 +24,6 @@ def node_score_entropy(prob):
         prob = 0.00001
     if prob == 1:
         prob = 0.99999
-    print(prob)
 
     return -prob * math.log(prob) - (1-prob) * math.log(1-prob)
 
@@ -221,10 +220,8 @@ class DecisionTree:
                 if split_column[r] == 1:
                     right_subset.append(data[r, :])
             indices = indices.remove(max_gain_index)
-            if node.left != None:
-                self._split_recurs(node.left, np.asarray(left_subset), indices)
-            if node.right != None:
-                self._split_recurs(node.right, np.asarray(right_subset), indices)
+            self._split_recurs(node.left, np.asarray(left_subset), indices)
+            self._split_recurs(node.right, np.asarray(right_subset), indices)
 
 
     def _calc_gain(self, data, split_index, gain_function):
