@@ -243,24 +243,18 @@ class DecisionTree:
                 right_subset.append(data[r, :])
         left_subset = np.asarray(left_subset).reshape(-1, data.shape[1])
         right_subset = np.asarray(right_subset).reshape(-1, data.shape[1])
-        P_y1 = np.sum(data)/(data.shape[0]*data.shape[1])
+        P_y1 = np.sum(data[:, 0])/data.shape[0]
         x_i_false = zero_count/len(split_column)
         x_i_true = one_count/len(split_column)
         if right_subset.shape[0] == 0:
             P_y1_true = 0
         else:
-            P_y1_true = np.sum(right_subset)/(right_subset.shape[0]*right_subset.shape[1])
+            P_y1_true = np.sum(right_subset[:, 0])/right_subset.shape[0]
         if left_subset.shape[0] == 0:
             P_y0_false = 0
         else:
-            P_y0_false = 1 - np.sum(left_subset)/(left_subset.shape[0]*left_subset.shape[1])
-        print(1, P_y1)
-        print(2, x_i_false)
-        print(3, x_i_true)
-        print(4, P_y1_true)
-        print(5, P_y0_false)
+            P_y0_false = 1 - np.sum(left_subset[:, 0])/left_subset.shape[0]
         gain = gain_function(P_y1) - x_i_true * gain_function(P_y1_true) - x_i_false * gain_function(P_y0_false)
-        print(gain)
         return gain
     
 
