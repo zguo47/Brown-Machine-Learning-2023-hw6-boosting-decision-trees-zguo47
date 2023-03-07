@@ -167,7 +167,7 @@ class DecisionTree:
               can return either label at random.
         '''
         
-        if data.size == 0 or indices == None or node.depth > self.max_depth or len(set(data[:, 1:].flatten())) == 1 :
+        if (data.size == 0) or (len(indices) == 0) or (node.depth > self.max_depth) or (len(set(data[:, 1:].flatten())) == 1) :
             return True, node.label
         else:
             labels = data[:, 0]
