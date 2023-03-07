@@ -219,12 +219,12 @@ class DecisionTree:
                     left_subset.append(data[r, :])
                 if split_column[r] == 1:
                     right_subset.append(data[r, :])
-            indices = copy.deepcopy(indices)
-            indices.remove(max_gain_index)
+            n_indices = copy.deepcopy(indices)
+            n_indices.remove(max_gain_index)
             if node.left != None:
-                self._split_recurs(node.left, np.asarray(left_subset), indices)
+                self._split_recurs(node.left, np.asarray(left_subset), n_indices)
             if node.right != None:
-                self._split_recurs(node.right, np.asarray(right_subset), indices)
+                self._split_recurs(node.right, np.asarray(right_subset), n_indices)
 
 
     def _calc_gain(self, data, split_index, gain_function):
