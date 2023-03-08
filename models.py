@@ -173,14 +173,11 @@ class DecisionTree:
         '''
 
         if (len(data) == 0) or (len(indices) == 0) or (node.depth >= self.max_depth) or (len(set(data[:, 0].flatten())) == 1) :
-            if node.isleaf:
-                return True, node.label
+            if len(data) != 0:
+                labels = data[:, 0]
+                return True, np.argmax(np.bincount(labels))
             else:
-                if data.size != 0:
-                    labels = data[:, 0]
-                    return True, np.argmax(np.bincount(labels))
-                else:
-                    return True, 1
+                return True, 0
         else:
             labels = data[:, 0]
             return False, np.argmax(np.bincount(labels))
