@@ -171,14 +171,16 @@ class DecisionTree:
               be if we were to terminate at that node). If there is no data left, you
               can return either label at random.
         '''
-        
+
         if (len(data) == 0) or (len(indices) == 0) or (node.depth >= self.max_depth) or (len(set(data[:, 0].flatten())) == 1) :
-            node.isleaf = True
-            if len(data) == 0:
+            if node.isleaf:
                 return True, node.label
             else:
-                labels = data[:, 0]
-                return True, np.argmax(np.bincount(labels))
+                if data.size != 0:
+                    labels = data[:, 0]
+                    return True, np.argmax(np.bincount(labels))
+                else:
+                    return True, 1
         else:
             labels = data[:, 0]
             return False, np.argmax(np.bincount(labels))
@@ -199,8 +201,12 @@ class DecisionTree:
         The data should be recursively passed to the children.
         '''
         bol, label = self._is_terminal(node, data, indices)
-        node.label = label
+        if bol == True:
+            node.isleaf = True
+            node.label = label
         if bol == False:
+            node.isleaf = False
+            node.label = label
             max_gain = float('-inf')
             max_gain_index = 1
             for index in indices:
@@ -209,7 +215,7 @@ class DecisionTree:
                     max_gain = gain
                     max_gain_index = index
             split_column = data[:, max_gain_index]
-            node._set_info(max_gain, len(split_column))
+            node._set_info(max_gain, len(data))
             node.index_split_on = max_gain_index
             left_subset = []
             right_subset = []
@@ -218,11 +224,11 @@ class DecisionTree:
                     left_subset.append(data[r, :])
                 if split_column[r] == 1:
                     right_subset.append(data[r, :])
-            indices.remove(max_gain_index)
             n_indices = indices.copy()
-            node.left = Node(depth=node.depth+1, label=0)
+            n_indices.remove(max_gain_index)
+            node.left = Node(depth=node.depth+1)
             self._split_recurs(node.left, np.asarray(left_subset), n_indices)
-            node.right = Node(depth=node.depth+1, label=1)
+            node.right = Node(depth=node.depth+1)
             self._split_recurs(node.right, np.asarray(right_subset), n_indices)
 
 

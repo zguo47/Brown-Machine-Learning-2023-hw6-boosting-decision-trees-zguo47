@@ -69,6 +69,10 @@ def explore_dataset(filename, class_name):
     # TODO: Feel free to print or plot anything you like here. Just comment
     # make sure to comment it out, or put it in a function that isn't called
     # by default when you hand in your code!
+    title = 'loss plot'
+    ax = plt.gca()
+    loss_plot(ax, title, tree1, tree7, train_data, test_data)
+    plt.show()
 
 def main():
     ########### PLEASE DO NOT CHANGE THESE LINES OF CODE! ###################
